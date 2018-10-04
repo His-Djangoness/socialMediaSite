@@ -12,8 +12,6 @@ const posts = require("./routes/api/posts");
 Task.createDatabase();
 createUserTable.createUser();
 createProfileTable.createProfile();
-createProfileTable.createEducation();
-createProfileTable.createExperience();
 
 const app = express();
 //body parser middleware

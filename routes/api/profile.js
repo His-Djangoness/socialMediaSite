@@ -185,4 +185,29 @@ router.get("/all", (req, res) => {
   });
 });
 
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+    let user_id = req.user.id;
+    const sql = `SELECT * FROM profile WHERE user_id  ='${user_id}'`;
+    db.query(sql, (err, result) => {
+      if (err) console.log(err);
+      if (Object.keys(result).length === 0) {
+        errors.profileError = `No profile to delete for ${req.user.name}`;
+        res.status(404).json(errors);
+      } else {
+        const delete_profile = `DELETE FROM profile WHERE user_id  ='${user_id}'`;
+        db.query(delete_profile, (err, result) => {
+          if (err) console.log(err);
+
+          // res.json(user);
+          res.json({ success: "profile successfully deleted" });
+        });
+      }
+    });
+  }
+);
+
 module.exports = router;
