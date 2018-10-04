@@ -1,3 +1,5 @@
+// check if data posted is either null, undefined, empty object or empty string
+// so as to be able to work with validator
 const isEmpty = value =>
   value === undefined ||
   value === null ||

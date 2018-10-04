@@ -26,7 +26,7 @@ router.post("/register", (req, res) => {
   //req.body includes everything thats sent to this route including name, email
 
   const { errors, isValid } = validateRegisterInput(req.body);
-  console.log(isValid);
+
   // Check Validation
   if (!isValid) {
     return res.status(400).json(errors);
@@ -34,7 +34,7 @@ router.post("/register", (req, res) => {
   const email = req.body.email;
   const sql = `SELECT count(*) as count FROM users WHERE email ='${email}'`;
   db.query(sql, (err, result) => {
-    if (err) console.log(err);
+    if (err) res.json(err);
 
     if (result[0].count > 0) {
       errors.email = "Email already exists";
@@ -61,7 +61,11 @@ router.post("/register", (req, res) => {
             newUser,
             (err, result, fields) => {
               if (err) throw err;
-              res.json(newUser);
+              res.json({
+                name: newUser.name,
+                email: newUser.email,
+                avatar: newUser.avatar
+              });
             }
           );
         });
@@ -86,7 +90,7 @@ router.post("/login", (req, res) => {
   //find user by email
   let sql = `SELECT id, name, avatar, email, password FROM users WHERE email ='${mail}'`;
   db.query(sql, (err, result) => {
-    if (err) console.log(err);
+    if (err) res.json(err);
     // check if user exists
 
     if (result.length === 0) {

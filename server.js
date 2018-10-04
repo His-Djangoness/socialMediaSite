@@ -7,7 +7,6 @@ const createUserTable = require("./models/User");
 const createProfileTable = require("./models/Profile");
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
-const posts = require("./routes/api/posts");
 
 Task.createDatabase();
 createUserTable.createUser();
@@ -30,4 +29,3 @@ require("./config/passport.js")(passport);
 //Use routes
 app.use("/api/users", users);
 app.use("/api/profile", profile);
-app.use("/api/posts", posts);

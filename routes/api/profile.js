@@ -11,6 +11,7 @@ const ValidateProfileInput = require("../../validation/profile");
 router.get("/test", (req, res) => {
   res.json({ message: "profile works" });
 });
+
 // GET api/profile
 // get current users profile
 // access private
@@ -22,7 +23,7 @@ router.get(
     let user_id = req.user.id;
     const sql = `SELECT * FROM profile WHERE user_id ='${user_id}'`;
     db.query(sql, (err, result) => {
-      if (err) console.log(err);
+      if (err) res.json(err);
       if (Object.keys(result).length === 0) {
         errors.noProfile = "No profile for this User";
         res.status(404).json(errors);
@@ -50,7 +51,7 @@ router.get("/all", (req, res) => {
   const errors = {};
   const sql = `SELECT * FROM profile`;
   db.query(sql, (err, result) => {
-    if (err) console.log(err);
+    if (err) res.json(err);
     if (Object.keys(result).length === 0) {
       errors.noProfiles = "No profiles at the moment";
       res.status(404).json(errors);
@@ -69,7 +70,7 @@ router.get("/handle/:handle", (req, res) => {
   const errors = {};
   const sql = `SELECT * FROM profile WHERE handle ='${req.params.handle}'`;
   db.query(sql, (err, result) => {
-    if (err) console.log(err);
+    if (err) res.json(err);
     if (Object.keys(result).length === 0) {
       errors.noProfile = "No profile for this User";
       res.status(404).json(errors);
@@ -88,7 +89,7 @@ router.get("/user/:user_id", (req, res) => {
   const errors = {};
   const sql = `SELECT * FROM profile WHERE user_id ='${req.params.user_id}'`;
   db.query(sql, (err, result) => {
-    if (err) console.log(err);
+    if (err) res.json(err);
     if (Object.keys(result).length === 0) {
       errors.noProfile = "No profile for this User";
       res.status(404).json(errors);
@@ -129,36 +130,39 @@ router.post(
     if (req.body.linked_in) profileFields.linked_in = req.body.linked_in;
     if (req.body.instagram) profileFields.instagram = req.body.instagram;
     if (req.body.twitter) profileFields.twitter = req.body.twitter;
-    console.log(profileFields);
+
     const check_user = `SELECT * FROM profile WHERE user_id ='${
       profileFields.user_id
     }'`;
     db.query(check_user, (err, result) => {
-      if (err) console.log(err);
+      if (err) res.json(err);
       if (Object.keys(result).length === 0) {
         //check if handle exists
         const check_handle = `SELECT * FROM profile WHERE handle ='${
           profileFields.handle
         }'`;
         db.query(check_handle, (err, result) => {
-          if (err) console.log(err);
+          if (err) res.json(err);
           if (Object.keys(result).length > 0) {
             errors.handle = "that handle already exists";
             res.status(400).json(errors);
           } else {
+            //create new profile for user
             const create_user = `INSERT INTO profile SET ?`;
             db.query(create_user, profileFields, (err, result) => {
-              if (err) console.log(err);
+              if (err) res.json(err);
               res.json(profileFields);
             });
           }
         });
       } else {
+        //if profile exists update current users profile
         const update_user = `UPDATE profile SET ? WHERE user_id = '${
           profileFields.user_id
         }'`;
+
         db.query(update_user, profileFields, (err, result) => {
-          if (err) console.log(err);
+          if (err) res.json(err);
           res.json(profileFields);
         });
       }
@@ -166,25 +170,9 @@ router.post(
   }
 );
 
-// POST api/profile/experience
-// add experience to profile
-// access public
-
-router.get("/all", (req, res) => {
-  const errors = {};
-  const sql = `SELECT * FROM profile`;
-  db.query(sql, (err, result) => {
-    if (err) console.log(err);
-    if (Object.keys(result).length === 0) {
-      errors.noProfiles = "No profiles at the moment";
-      res.status(404).json(errors);
-    } else {
-      // res.json(user);
-      res.json(result);
-    }
-  });
-});
-
+// DELETE api/profile
+// delete current user's profile
+// access private
 router.delete(
   "/",
   passport.authenticate("jwt", { session: false }),
@@ -192,15 +180,16 @@ router.delete(
     const errors = {};
     let user_id = req.user.id;
     const sql = `SELECT * FROM profile WHERE user_id  ='${user_id}'`;
+
     db.query(sql, (err, result) => {
-      if (err) console.log(err);
+      if (err) res.json(err);
       if (Object.keys(result).length === 0) {
         errors.profileError = `No profile to delete for ${req.user.name}`;
         res.status(404).json(errors);
       } else {
         const delete_profile = `DELETE FROM profile WHERE user_id  ='${user_id}'`;
         db.query(delete_profile, (err, result) => {
-          if (err) console.log(err);
+          if (err) res.json(err);
 
           // res.json(user);
           res.json({ success: "profile successfully deleted" });

@@ -6,8 +6,8 @@ let createTableUser = {
       id int AUTO_INCREMENT, 
       name VARCHAR(50) NOT NULL, 
       email VARCHAR(100) NOT NULL,  
-    password VARCHAR(500)NOT NULL, 
-    avatar VARCHAR(500) NOT NULL, 
+    password VARCHAR(1000)NOT NULL, 
+    avatar VARCHAR(1000) NOT NULL, 
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (ID)
     )`;
