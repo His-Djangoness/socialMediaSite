@@ -4,7 +4,8 @@ const db = require("../config/keys");
 var connection = mysql.createConnection({
   host: db.host,
   user: db.user,
-  password: db.password
+  password: db.password,
+  database: "devsocialnetwork"
 });
 
 connection.connect();

@@ -1,22 +1,33 @@
 const express = require("express");
 const mysql = require("mysql");
-const db = require("./models/dbconnection");
-
+const bodyParser = require("body-parser");
+const passport = require("passport");
+const Task = require("./models/CreateDatabase");
+const createUserTable = require("./models/User");
+const createProfileTable = require("./models/Profile");
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 
-db.query("CREATE DATABASE IF NOT EXISTS mydb", function(err, result) {
-  if (err) throw err;
-  console.log("Database created");
-});
+Task.createDatabase();
+createUserTable.createUser();
+createProfileTable.createProfile();
+createProfileTable.createEducation();
+createProfileTable.createExperience();
 
 const app = express();
+//body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const port = process.env.port || 3000;
 
 app.listen(port, () => console.log(`server running on port ${port}`));
 
-app.get("/", (req, res) => res.send("hello"));
+//passport middleware
+app.use(passport.initialize());
+//passport config
+require("./config/passport.js")(passport);
 
 //Use routes
 app.use("/api/users", users);
